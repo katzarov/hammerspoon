@@ -1,5 +1,5 @@
 local eventtap = require("hs.eventtap")
-local event    = eventtap.event
+local event = eventtap.event
 
 local config = require("config")
 local keyboardConfig = config.keyboard
@@ -36,12 +36,12 @@ local clFlagState = (eventtap.checkKeyboardModifiers(true)._raw & keyboardConfig
 -- key handling function
 local keyHandler = function(e)
     local flag, replacement = getReplacementValue(e, replacements)
-    
+
     -- if replacement has a value, then one of our keys was pressed
     if replacement then
         -- duplicate the event, keeping all traditional modifiers, but with our (arrow) key instead
         local isDown = e:getType() == event.types.keyDown
-        local flags  = {}
+        local flags = {}
 
         for k, v in pairs(e:getFlags()) do
             if v then
@@ -52,7 +52,7 @@ local keyHandler = function(e)
 
                 table.insert(flags, k)
 
-                if(flag == k) then
+                if (flag == k) then
                     -- if we have already setting up the required flag for this event - likely a shift, then lets not do it again.
                     flag = nil
                 end
@@ -61,7 +61,7 @@ local keyHandler = function(e)
             end
         end
 
-        if flag then 
+        if flag then
             table.insert(flags, flag)
         end
 
@@ -70,7 +70,8 @@ local keyHandler = function(e)
             -- if a key is held down, it actually sends a second down event, but with
             -- the autorepeat property set, so duplicate that as well if this is a
             -- key-down event:
-            replacementEvent:setProperty(event.properties.keyboardEventAutorepeat, e:getProperty(event.properties.keyboardEventAutorepeat))
+            replacementEvent:setProperty(event.properties.keyboardEventAutorepeat,
+                e:getProperty(event.properties.keyboardEventAutorepeat))
         end
 
         if logging then
@@ -101,7 +102,7 @@ local eventtapFn = function(e)
     else
         state = (e:rawFlags() & keyboardConfig.layer_trigger_key) ~= 0
     end
-    
+
     if state and not clFlagState then
         clFlagState = true
         keyListener:start()

@@ -1,0 +1,8 @@
+{
+  "format": {
+    "defaultConfig": {
+      "align_continuous_assign_statement": "false"
+    }
+  }
+  //   telemetery is now disabled by default ?
+}

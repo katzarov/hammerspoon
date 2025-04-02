@@ -1,5 +1,5 @@
 local eventtap = require("hs.eventtap")
-local event    = eventtap.event
+local event = eventtap.event
 
 local config = {}
 
@@ -10,7 +10,7 @@ config.keyboard = {
     layer_trigger_key = event.rawFlagMasks.secondaryFn,
     -- immediately activated upon pressing the trigger key. Upon trigger key release layer is deactivated.
     -- maybe do arrows keys vi style { h = "left", j = "down", k = "up", l = "right" }
-    layer_remaps = { j = "left", k = "down", i = "up", l = "right", t = { mod = "shift", key= "9" }, y = { mod = "shift", key= "0" }, g = { mod = "shift", key= "[" }, h = { mod = "shift", key= "]" }, b = "[", n = "]" },
+    layer_remaps = { j = "left", k = "down", i = "up", l = "right", t = { mod = "shift", key = "9" }, y = { mod = "shift", key = "0" }, g = { mod = "shift", key = "[" }, h = { mod = "shift", key = "]" }, b = "[", n = "]" },
 }
 
 config.logging = true
