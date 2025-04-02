@@ -31,6 +31,8 @@ end
 -- get initial trigger key state, this script was copied from TODO where they used caps lock
 local clFlagState = (eventtap.checkKeyboardModifiers(true)._raw & keyboardConfig.layer_trigger_key) ~= 0
 
+-- make this for flag keys like fn or tabs lock
+-- TODO make another handler for keys like spacebar or something else i try to use a trigger.
 -- key handling function
 local keyHandler = function(e)
     local flag, replacement = getReplacementValue(e, replacements)
@@ -43,11 +45,19 @@ local keyHandler = function(e)
 
         for k, v in pairs(e:getFlags()) do
             if v then
+                if (k == "fn") then
+                    -- since this is our trigger key we dont actually mean to use its original funciton. Thankfully, so far I have used this key only for switching languages, so for me its fine to throw it away.
+                    goto continue
+                end
+
                 table.insert(flags, k)
+
                 if(flag == k) then
-                    -- if we have already setting up the required flag for this event, then lets not do it again later
+                    -- if we have already setting up the required flag for this event - likely a shift, then lets not do it again.
                     flag = nil
                 end
+
+                ::continue::
             end
         end
 
@@ -73,6 +83,7 @@ local keyHandler = function(e)
         return true, { replacementEvent }
     else
         -- otherwise, do nothing to the event, just pass it along
+        -- so cases like fn + the function keys... or fn + f can totaly work since we dont provide a map for function keys or the f key - at least for now.
         return false
     end
 end
