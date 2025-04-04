@@ -18,3 +18,8 @@ function table.print(t, prefix)
         end
     end
 end
+
+KEYBOARD_LAYER_TRIGGER_KEY_TYPE = {
+    MODIFIER = 0,
+    CHARACTER = 1
+}

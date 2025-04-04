@@ -1,71 +1,17 @@
 local eventtap = require("hs.eventtap")
-local keycodes = require("hs.keycodes")
+local keyboard_utils = require("keyboard_layer_utils")
 local config = require("config")
 
 local event = eventtap.event
 local keyboardConfig, logging = config.keyboard, config.logging
 
--- that makes the layers keys language agnostic
-local replaceKeyLetterWithKeyCode = function(t)
-    local table = {}
-    for k, v in pairs(t) do
-        local keyCode = keycodes.map[k]
-        table[keyCode] = v
-    end
-    return table
-end
-
-local layerReplacements = replaceKeyLetterWithKeyCode(keyboardConfig.layer_remaps)
-
---- @return string|nil modKey Modifier key - likely shift, if any.
---- @return number|nil key key, if any.
-local getReplacementValue = function(keyEvent, replacementKeyMap)
-    local keyCode = keyEvent:getKeyCode()
-    local replacement = replacementKeyMap[keyCode]
-
-    if type(replacement) == "table" then
-        return replacement.mod, replacement.key
-    end
-
-    return nil, replacement
-end
-
---- @param keyEvent unknown
---- @param flagOfReplacementValue string|nil
---- @return table flagsTable - array of strings
-local getFlags = function(keyEvent, flagOfReplacementValue)
-    -- btw, primitive values are passed by value. and tables by refrence.. so it looks like its the same as JS.
-    local flags = {}
-    for k, v in pairs(keyEvent:getFlags()) do
-        if v then
-            if (k == "fn") then
-                -- since this is our trigger key we dont actually mean to use its original function.
-                -- Thankfully, so far I have used this key only for switching languages, so for me its fine to throw it away.
-                goto continue
-            end
-
-            table.insert(flags, k)
-
-            if (flagOfReplacementValue == k) then
-                flagOfReplacementValue = nil
-            end
-
-            ::continue::
-        end
-    end
-
-    if flagOfReplacementValue then
-        table.insert(flags, flagOfReplacementValue)
-    end
-
-    return flags
-end
+local layerReplacements = keyboard_utils.replaceKeyLetterWithKeyCode(keyboardConfig.layer_remaps)
 
 -- make this for flag keys like fn or tabs lock
 -- TODO make another handler for keys like spacebar or something else i try to use a trigger.
 -- key handling function
 local keyEventHandler = function(e)
-    local flag, replacement = getReplacementValue(e, layerReplacements)
+    local flag, replacement = keyboard_utils.getReplacementValue(e, layerReplacements)
 
     -- btw, in lua, the only thing that is falsey is false and nil.
     if not replacement then
@@ -77,7 +23,7 @@ local keyEventHandler = function(e)
     -- replacement has a value, so one of our layer keys was pressed.
     -- we need to duplicate the event, keeping all traditional modifiers, but with our layer key instead, (and possible that we have added a modifier)
 
-    local flags = getFlags(e, flag)
+    local flags = keyboard_utils.getFlags(e, flag, keyboardConfig.layer_trigger_key)
     local isDown = e:getType() == event.types.keyDown
     local replacementEvent = event.newKeyEvent(flags, replacement, isDown)
 
@@ -100,7 +46,7 @@ local keyEventHandler = function(e)
 end
 
 -- get initial trigger key state, (btw, this script was copied from ... where they used caps lock)
-local flagState = (eventtap.checkKeyboardModifiers(true)._raw & keyboardConfig.layer_trigger_key) ~= 0
+local flagState = (eventtap.checkKeyboardModifiers(true)._raw & keyboardConfig.layer_trigger_key_raw) ~= 0
 
 -- set up, but don't start, keyup/keydown eventtap
 local keyListener = eventtap.new({ event.types.keyDown, event.types.keyUp }, keyEventHandler)
@@ -113,7 +59,7 @@ local flagsChangedHandler = function(e)
         state = e
         flagState = not flagState
     else
-        state = (e:rawFlags() & keyboardConfig.layer_trigger_key) ~= 0
+        state = (e:rawFlags() & keyboardConfig.layer_trigger_key_raw) ~= 0
     end
 
     if state and not flagState then

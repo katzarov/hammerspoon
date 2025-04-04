@@ -1,3 +1,3 @@
 -- hammerspoon entrypoint
-require("utils")
-require("keyboard")
+require("setup")
+require("keyboard_layer")
