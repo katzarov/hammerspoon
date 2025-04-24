@@ -17,6 +17,7 @@ local keyEventHandler = function(e)
     if not replacement then
         -- do nothing to the event, just pass it along
         -- so cases like fn + the function keys... or fn + f can totaly work since we dont provide a map for function keys or the f key - at least for now.
+        -- todo or we should swallow this event and do nothing ?
         return false
     end
 

@@ -3,6 +3,13 @@
     "defaultConfig": {
       "align_continuous_assign_statement": "false"
     }
+  },
+  // https://github.com/LuaLS/lua-language-server/issues/462
+  // https://luals.github.io/wiki/settings/#telemetry
+  "telemetry": {
+    "enable": false
   }
-  //   telemetery is now disabled by default ?
+  // "diagnostics.globals": [
+  //     "hs"
+  // ]
 }
